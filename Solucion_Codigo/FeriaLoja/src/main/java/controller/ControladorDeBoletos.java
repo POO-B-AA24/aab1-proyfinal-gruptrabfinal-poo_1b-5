@@ -2,8 +2,8 @@ package controller;
 
 import model.GestorDeBoletos;
 import view.VistaConsola;
-import model.Evento;
-import model.Boleto;
+import model.EventoBase;
+import model.BoletoBase;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -19,15 +19,24 @@ public class ControladorDeBoletos {
     }
 
     public void crearEvento(String nombre, LocalDate fecha) {
-        gestorDeBoletos.agregarEvento(new Evento(nombre, fecha));
+        gestorDeBoletos.agregarEvento(new EventoBase(nombre, fecha));
         vistaConsola.mostrarMensaje("Evento creado: " + nombre + " en " + fecha);
     }
 
     public void venderBoleto(String tipo, LocalDate fecha, String nombre, String cedula) {
         double precio = gestorDeBoletos.calcularPrecioBoleto(tipo, fecha);
-        Boleto boleto = new Boleto(tipo, fecha, precio, nombre, cedula);
+        BoletoBase boleto = new BoletoBase(nombre, cedula, tipo, fecha, precio);
         gestorDeBoletos.venderBoleto(boleto);
         vistaConsola.mostrarMensaje("Boleto vendido: " + tipo + " para " + fecha + " a " + nombre + " por " + precio);
+           String factura = "----- FACTURA -----\n"
+                + "Nombre: " + boleto.getNombre() + "\n"
+                + "Cédula: " + boleto.getCedula() + "\n"
+                + "Evento: " + boleto.getTipo() + "\n"
+                + "Fecha: " + boleto.getFecha() + "\n"
+                + "Precio: " + boleto.getPrecio() + "\n"
+                + "-------------------";
+        vistaConsola.mostrarMensaje(factura);
+        
     }
 
     public void eliminarBoleto(String tipo, LocalDate fecha, double precio, String cedula) {
@@ -40,13 +49,13 @@ public class ControladorDeBoletos {
     }
 
     public void mostrarEventos() {
-        for (Evento evento : gestorDeBoletos.obtenerEventos()) {
+        for (EventoBase evento : gestorDeBoletos.obtenerEventos()) {
             vistaConsola.mostrarMensaje("Evento: " + evento.getNombre() + " en " + evento.getFecha());
         }
     }
 
     public void mostrarBoletosVendidos() {
-        for (Boleto boleto : gestorDeBoletos.obtenerBoletosVendidos()) {
+        for (BoletoBase boleto : gestorDeBoletos.obtenerBoletosVendidos()) {
             vistaConsola.mostrarMensaje("Boleto: " + boleto.getTipo() + " para " + boleto.getFecha() + " vendido a " + boleto.getNombre() + " por " + boleto.getPrecio());
         }
     }
@@ -88,22 +97,22 @@ public class ControladorDeBoletos {
     }
 
     public void mostrarEventosDisponibles() {
-        List<Evento> eventos = gestorDeBoletos.obtenerEventos();
+        List<EventoBase> eventos = gestorDeBoletos.obtenerEventos();
         if (eventos.isEmpty()) {
             vistaConsola.mostrarMensaje("No hay eventos disponibles.");
         } else {
-            for (Evento evento : eventos) {
+            for (EventoBase evento : eventos) {
                 vistaConsola.mostrarMensaje("Evento: " + evento.getNombre() + " en " + evento.getFecha());
             }
         }
     }
 
     public void mostrarBoletosPorFecha(LocalDate fecha) {
-        List<Boleto> boletos = gestorDeBoletos.obtenerBoletosPorFecha(fecha);
+        List<BoletoBase> boletos = gestorDeBoletos.obtenerBoletosPorFecha(fecha);
         if (boletos.isEmpty()) {
             vistaConsola.mostrarMensaje("No hay boletos vendidos para la fecha " + fecha);
         } else {
-            for (Boleto boleto : boletos) {
+            for (BoletoBase boleto : boletos) {
                 vistaConsola.mostrarMensaje("Boleto: " + boleto.getTipo() + " vendido a " + boleto.getNombre() + " por " + boleto.getPrecio());
             }
         }
@@ -115,7 +124,7 @@ public class ControladorDeBoletos {
     }
 
     public void mostrarAsistenciaPorEvento(String nombreEvento) {
-        Evento evento = gestorDeBoletos.obtenerEventoPorNombre(nombreEvento);
+        EventoBase evento = gestorDeBoletos.obtenerEventoPorNombre(nombreEvento);
         if (evento == null) {
             vistaConsola.mostrarMensaje("Evento no encontrado.");
         } else {
@@ -123,4 +132,6 @@ public class ControladorDeBoletos {
             vistaConsola.mostrarMensaje("Asistencia al evento '" + nombreEvento + "': " + asistencia);
         }
     }
+
+    
 }

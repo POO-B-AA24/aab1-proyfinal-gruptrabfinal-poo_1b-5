@@ -3,7 +3,6 @@ package view;
 import com.opencsv.exceptions.CsvValidationException;
 import controller.ControladorDeBoletos;
 import model.GestorDeBoletos;
-
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Scanner;

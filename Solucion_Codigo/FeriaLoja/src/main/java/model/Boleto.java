@@ -2,17 +2,27 @@ package model;
 
 import java.time.LocalDate;
 
-public class Boleto extends Persona {
-    private static final long serialVersionUID = 1L;
+public class Boleto {
+    private String nombre;
+    private String cedula;
     private String tipo;
     private LocalDate fecha;
     private double precio;
 
-    public Boleto(String tipo, LocalDate fecha, double precio, String nombre, String cedula) {
-        super(nombre, cedula);
+    public Boleto(String nombre, String cedula, String tipo, LocalDate fecha, double precio) {
+        this.nombre = nombre;
+        this.cedula = cedula;
         this.tipo = tipo;
         this.fecha = fecha;
         this.precio = precio;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public String getCedula() {
+        return cedula;
     }
 
     public String getTipo() {
@@ -26,4 +36,5 @@ public class Boleto extends Persona {
     public double getPrecio() {
         return precio;
     }
+
 }

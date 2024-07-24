@@ -1,15 +1,22 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package model;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Evento implements Serializable {
-    private static final long serialVersionUID = 1L;
+/**
+ *
+ * @author Anthony
+ */
+public class Evento {
+
     private String nombre;
     private LocalDate fecha;
-    private List<Boleto> boletos;
+    private List<BoletoBase> boletos;
 
     public Evento(String nombre, LocalDate fecha) {
         this.nombre = nombre;
@@ -25,11 +32,11 @@ public class Evento implements Serializable {
         return fecha;
     }
 
-    public List<Boleto> getBoletos() {
+    public List<BoletoBase> getBoletos() {
         return boletos;
     }
 
-    public void agregarBoleto(Boleto boleto) {
+    public void agregarBoleto(BoletoBase boleto) {
         boletos.add(boleto);
     }
 }

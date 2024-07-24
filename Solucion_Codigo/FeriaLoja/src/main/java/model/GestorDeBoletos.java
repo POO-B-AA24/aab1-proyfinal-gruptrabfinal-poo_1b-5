@@ -7,15 +7,14 @@ import com.opencsv.exceptions.CsvValidationException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GestorDeBoletos implements Serializable {
-    private static final long serialVersionUID = 1L;
-    private List<Evento> eventos;
-    private List<Boleto> boletosVendidos;
+public class GestorDeBoletos  {
+
+    private List<EventoBase> eventos;
+    private List<BoletoBase> boletosVendidos;
 
     private static final double PRECIO_BOLETO_NORMAL = 10.0;
     private static final double PRECIO_BOLETO_ESPECIAL = 20.0;
@@ -25,12 +24,12 @@ public class GestorDeBoletos implements Serializable {
         boletosVendidos = new ArrayList<>();
     }
 
-    public void agregarEvento(Evento evento) {
+    public void agregarEvento(EventoBase evento) {
         eventos.add(evento);
     }
 
-    public Evento obtenerEventoPorFecha(LocalDate fecha) {
-        for (Evento evento : eventos) {
+    public EventoBase obtenerEventoPorFecha(LocalDate fecha) {
+        for (EventoBase evento : eventos) {
             if (evento.getFecha().equals(fecha)) {
                 return evento;
             }
@@ -38,19 +37,19 @@ public class GestorDeBoletos implements Serializable {
         return null;
     }
 
-    public void venderBoleto(Boleto boleto) {
+    public void venderBoleto(BoletoBase boleto) {
         boletosVendidos.add(boleto);
-        Evento evento = obtenerEventoPorFecha(boleto.getFecha());
+        EventoBase evento = obtenerEventoPorFecha(boleto.getFecha());
         if (evento != null) {
             evento.agregarBoleto(boleto);
         }
     }
 
     public boolean eliminarBoleto(String tipo, LocalDate fecha, double precio, String cedula) {
-        for (Boleto boleto : boletosVendidos) {
+        for (BoletoBase boleto : boletosVendidos) {
             if (boleto.getTipo().equals(tipo) && boleto.getFecha().equals(fecha) && boleto.getPrecio() == precio && boleto.getCedula().equals(cedula)) {
                 boletosVendidos.remove(boleto);
-                Evento evento = obtenerEventoPorFecha(boleto.getFecha());
+                EventoBase evento = obtenerEventoPorFecha(boleto.getFecha());
                 if (evento != null) {
                     evento.getBoletos().remove(boleto);
                 }
@@ -60,17 +59,17 @@ public class GestorDeBoletos implements Serializable {
         return false;
     }
 
-    public List<Boleto> obtenerBoletosVendidos() {
+    public List<BoletoBase> obtenerBoletosVendidos() {
         return boletosVendidos;
     }
 
-    public List<Evento> obtenerEventos() {
+    public List<EventoBase> obtenerEventos() {
         return eventos;
     }
 
-    public List<Boleto> obtenerBoletosPorFecha(LocalDate fecha) {
-        List<Boleto> boletosPorFecha = new ArrayList<>();
-        for (Boleto boleto : boletosVendidos) {
+    public List<BoletoBase> obtenerBoletosPorFecha(LocalDate fecha) {
+        List<BoletoBase> boletosPorFecha = new ArrayList<>();
+        for (BoletoBase boleto : boletosVendidos) {
             if (boleto.getFecha().equals(fecha)) {
                 boletosPorFecha.add(boleto);
             }
@@ -80,7 +79,7 @@ public class GestorDeBoletos implements Serializable {
 
     public double calcularGananciasTotales() {
         double total = 0;
-        for (Boleto boleto : boletosVendidos) {
+        for (BoletoBase boleto : boletosVendidos) {
             total += boleto.getPrecio();
         }
         return total;
@@ -96,7 +95,7 @@ public class GestorDeBoletos implements Serializable {
     }
 
     public int obtenerAsistenciaPorEvento(String nombreEvento) {
-        for (Evento evento : eventos) {
+        for (EventoBase evento : eventos) {
             if (evento.getNombre().equals(nombreEvento)) {
                 return evento.getBoletos().size();
             }
@@ -110,7 +109,7 @@ public class GestorDeBoletos implements Serializable {
             while ((linea = lector.readNext()) != null) {
                 String nombre = linea[0];
                 LocalDate fecha = LocalDate.parse(linea[1]);
-                Evento evento = new Evento(nombre, fecha);
+                EventoBase evento = new EventoBase(nombre, fecha);
                 eventos.add(evento);
             }
         }
@@ -125,9 +124,9 @@ public class GestorDeBoletos implements Serializable {
                 double precio = Double.parseDouble(linea[2]);
                 String nombre = linea[3];
                 String cedula = linea[4];
-                Boleto boleto = new Boleto(tipo, fecha, precio, nombre, cedula);
+                BoletoBase boleto = new BoletoBase(nombre, cedula, tipo, fecha, precio);
                 boletosVendidos.add(boleto);
-                Evento evento = obtenerEventoPorFecha(fecha);
+                EventoBase evento = obtenerEventoPorFecha(fecha);
                 if (evento != null) {
                     evento.agregarBoleto(boleto);
                 }
@@ -137,7 +136,7 @@ public class GestorDeBoletos implements Serializable {
 
     public void guardarEventosEnCSV(String nombreArchivo) throws IOException {
         try (CSVWriter escritor = new CSVWriter(new FileWriter(nombreArchivo))) {
-            for (Evento evento : eventos) {
+            for (EventoBase evento : eventos) {
                 String[] linea = {evento.getNombre(), evento.getFecha().toString()};
                 escritor.writeNext(linea);
             }
@@ -146,15 +145,15 @@ public class GestorDeBoletos implements Serializable {
 
     public void guardarBoletosEnCSV(String nombreArchivo) throws IOException {
         try (CSVWriter escritor = new CSVWriter(new FileWriter(nombreArchivo))) {
-            for (Boleto boleto : boletosVendidos) {
+            for (BoletoBase boleto : boletosVendidos) {
                 String[] linea = {boleto.getTipo(), boleto.getFecha().toString(), String.valueOf(boleto.getPrecio()), boleto.getNombre(), boleto.getCedula()};
                 escritor.writeNext(linea);
             }
         }
     }
 
-    public Evento obtenerEventoPorNombre(String nombreEvento) {
-        for (Evento evento : eventos) {
+    public EventoBase obtenerEventoPorNombre(String nombreEvento) {
+        for (EventoBase evento : eventos) {
             if (evento.getNombre().equals(nombreEvento)) {
                 return evento;
             }
@@ -162,7 +161,7 @@ public class GestorDeBoletos implements Serializable {
         return null;
     }
 
-    public int calcularAsistenciaPorEvento(Evento evento) {
+    public int calcularAsistenciaPorEvento(EventoBase evento) {
         return evento.getBoletos().size();
     }
 }
