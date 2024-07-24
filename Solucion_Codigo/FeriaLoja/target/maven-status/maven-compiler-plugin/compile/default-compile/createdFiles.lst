@@ -1,0 +1,7 @@
+model\Persona.class
+view\Menu.class
+model\Boleto.class
+model\Evento.class
+model\GestorDeBoletos.class
+view\VistaConsola.class
+controller\ControladorDeBoletos.class
